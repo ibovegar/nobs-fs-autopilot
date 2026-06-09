@@ -1,6 +1,20 @@
-# Nobs Autopilot — DIY VR-Optimized Autopilot Panel
+# Nobs Autopilot — DIY VR-Friendly Autopilot Panel
 
-This manual provides the hardware wiring map, pin specifications, Bill of Materials (BOM), and assembly instructions for a custom plug-and-play flight simulator autopilot panel. The firmware itself lives in [firmware/arduino_micro/](firmware/arduino_micro/) and is documented in [docs/firmware_arduino_micro.md](docs/firmware_arduino_micro.md).
+**Nobs Autopilot is a build-it-yourself control panel for flight simulators** — four knobs and
+eight switches that you wire up to a small Arduino board and bind to autopilot controls in MSFS
+or DCS. It plugs in over USB and is recognised automatically, with no drivers to install.
+
+This page is the full build guide: what to buy, how to wire it, how to put it together, and how
+to set it up in the sim. Basic soldering is part of the build, but you don't need any prior
+Arduino experience to follow along.
+
+> **Two board choices — pick whichever you have.** Both end up working exactly the same; they
+> just differ in wiring pins and how you load the firmware:
+> - **Arduino Micro** → [firmware/arduino_micro/README.md](firmware/arduino_micro/README.md)
+> - **Arduino Nano ESP32** → [firmware/arduino_eps32_nano/README.md](firmware/arduino_eps32_nano/README.md)
+>
+> The wiring table and parts list below show the **Arduino Micro** build. If you're using the
+> Nano ESP32, use the pin column for it in [docs/arduino-esp-32-wiring.md](docs/arduino-esp-32-wiring.md).
 
 ## Virtual Reality (VR) Design Philosophy
 Unlike traditional cockpit panels, **this project is engineered specifically for VR flight simulator users**. Because you cannot see your physical hands while wearing a headset, this panel discards all visual screens, LEDs, and digital displays. Instead, it focuses entirely on **tactile memory and physical feedback**:
@@ -9,16 +23,48 @@ Unlike traditional cockpit panels, **this project is engineered specifically for
 
 
 ## Project Overview
-* **Microcontroller:** Arduino Micro (ATmega32U4, 5V logic, native USB HID stack)
-* **Rotary Encoders (x4):** Bourns PEC11H-4020F-S0016 (mechanical, with built-in push switches)
-* **Momentary Switches (x8):** E-Switch 700SP7B10M2REH (subminiature SPDT, ON-ON momentary)
-* **Interface Protocol:** Native USB HID gamepad, recognized directly by MSFS 2024 or DCS. The device announces a custom USB identity (VID `0x2341`, PID `0x0657`) and the product name **"Nobs Autopilot"**.
 
-> **Note:** All inputs use the ATmega32U4's internal pull-up resistors, so no external pull-up resistors are required. Each component terminal connects to its assigned Arduino GPIO pin on one side and to the common ground on the other.
+In short: an Arduino board reads 4 knobs and 8 switches and presents them to your PC as a plain
+USB game controller, which the sim binds to autopilot functions. Here's what's inside:
+
+* **The brain (microcontroller):** Arduino Micro — *or* an Arduino Nano ESP32 (the firmware
+  supports both).
+* **Rotary Encoders (×4):** Bourns PEC11H-4020F-S0016 — the knobs. They click as you turn them and
+  can also be pushed in.
+* **Momentary Switches (×8):** E-Switch 700SP7B10M2REH — the toggle switches.
+* **How the PC sees it:** as a standard USB game controller (HID gamepad), recognised directly by
+  MSFS 2024 or DCS — no driver install. It identifies itself as **"Nobs Autopilot"** using a
+  custom USB ID (`2341` / `0657`) so the Nobs app can pick it out automatically.
+
+> **Note:** Every control wires up the same simple way — one terminal to its assigned Arduino pin,
+> the other terminal to common ground. No external resistors are needed; the firmware turns on the
+> Arduino's built-in pull-up resistors for you (true for both the Micro and the Nano ESP32).
+
+## Using an Arduino Nano ESP32 instead of the Micro
+
+This guide is written around the **Arduino Micro**, but the project fully supports the **Arduino
+Nano ESP32** too — it ends up as the exact same **"Nobs Autopilot"** device (`2341` / `0657`) and
+behaves identically in the sim. If you go with the Nano ESP32, only **two** things differ:
+
+1. **Wiring pins are different.** Use the *"Arduino Nano ESP32"* column in
+   [docs/arduino-esp-32-wiring.md](docs/arduino-esp-32-wiring.md) instead of the Micro pin table
+   below.
+2. **Loading the firmware is a little different.** Follow
+   [firmware/arduino_eps32_nano/README.md](firmware/arduino_eps32_nano/README.md) (it uses a small
+   `build_opt.h` file and a double-tap-RESET step when re-uploading).
+
+**Everything else is the same** — the parts list (just swap the board), the 3D-printed enclosure,
+the assembly steps, the Nobs app, and the in-sim binding all apply unchanged. So if you're using
+the Nano ESP32, read the rest of this page normally and just substitute those two things.
 
 ## Hardware Connection Scheme
 
-Every component terminal connects directly to an assigned Arduino Micro pin on one side. No external pull-up resistors are required, as internal pull-ups are enabled in the firmware.
+This is the wiring map: each control has one wire to a numbered pin on the Arduino, and one wire
+to **GND** (ground). That's all — you don't need any resistors or extra parts, because the
+firmware takes care of that for you.
+
+The table below is for the **Arduino Micro**. Using an **Arduino Nano ESP32**? The pins are
+different — see [docs/arduino-esp-32-wiring.md](docs/arduino-esp-32-wiring.md) for its column.
 
 | Component Group | Component Label | Hardware Connection | Arduino Micro Pin | Virtual HID Button | Action Type |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -101,7 +147,14 @@ Rough cost estimate for a single panel, in USD. These are ballpark figures only,
 
 ## Assembly Instructions
 
-Follow these instructions in sequence to assemble your panel hardware safely.
+Here's how the panel goes together, in order. There's soldering involved, so take your time and
+work in a well-lit, ventilated spot. Don't rush — it's much easier to get each joint right the
+first time than to fix it later. If a term is unfamiliar, a quick search will usually show you
+exactly what it looks like.
+
+The build happens in four stages: (1) prep the little circuit board the Arduino sits on, (2) wire
+up the switches and knobs, (3) mount everything to the front plate, and (4) close it all up in
+the case.
 
 ### Phase 1: Breakout Board Assembly
 * **Fit Headers:** Position female socket headers onto the stripboard to match the Arduino Micro profile and solder them from underneath.
@@ -130,10 +183,21 @@ Follow these instructions in sequence to assemble your panel hardware safely.
 
 ## Firmware
 
-The USB HID controller firmware is an Arduino sketch built around the [Arduino Joystick Library](https://github.com/MHeironimus/ArduinoJoystickLibrary) (a copy is bundled as [firmware/arduino_micro/ArduinoJoystickLibrary-2.1.1.zip](firmware/arduino_micro/ArduinoJoystickLibrary-2.1.1.zip)).
+The firmware is the little program that runs on the Arduino and makes it act as the game
+controller. There are step-by-step guides for loading it — **follow the one for your board:**
 
-* **Sketch:** [firmware/arduino_micro/arduino_micro.ino](firmware/arduino_micro/arduino_micro.ino), exposes the 20 buttons in the order the table above describes (encoder CW/CCW/push first, then SW1–SW8), with full quadrature decoding, pulse-paced rotation steps, and host-configurable per-encoder acceleration over the USB serial port.
-* **USB identity & flashing:** [docs/firmware_arduino_micro.md](docs/firmware_arduino_micro.md), explains how to bake the custom VID `0x2341` / PID `0x0657` and the **"Nobs Autopilot"** product name into the build via Arduino's `boards.txt`, then flash with the **Arduino Micro** board selected.
+- **Arduino Micro:** [firmware/arduino_micro/README.md](firmware/arduino_micro/README.md)
+- **Arduino Nano ESP32:** [firmware/arduino_eps32_nano/README.md](firmware/arduino_eps32_nano/README.md)
+
+Both give the board the **"Nobs Autopilot"** name and the custom USB ID (`2341` / `0657`) the app
+looks for, and both expose the same 20 buttons in the same order (each encoder's turn-left,
+turn-right, and push, then switches SW1–SW8). The knobs are read with full quadrature decoding so
+fast turns count correctly, and each knob's acceleration can be tuned from the app and is saved on
+the board.
+
+*(Under the hood, the Micro build uses the [Arduino Joystick Library](https://github.com/MHeironimus/ArduinoJoystickLibrary),
+bundled as [firmware/arduino_micro/ArduinoJoystickLibrary-2.1.1.zip](firmware/arduino_micro/ArduinoJoystickLibrary-2.1.1.zip);
+the Nano ESP32 build uses the ESP32's own USB support.)*
 
 ## Nobs FS Companion App
 
@@ -147,14 +211,23 @@ See the app repository for installation and usage details: <https://github.com/i
 
 ## Verification & First-Time Setup
 
-1. **Flash the firmware:** Follow [docs/firmware_arduino_micro.md](docs/firmware_arduino_micro.md) to patch `boards.txt` (for the VID/PID and name) and upload the sketch with the **Arduino Micro** board selected.
-2. **Check continuity first:** Before plugging into USB, use a multimeter to confirm there are no shorts across your common ground loops.
-3. **Confirm the device name:** Once connected, the panel should announce itself to the OS as `Nobs Autopilot (Vendor: 2341 Product: 0657)`. If it shows a generic name, open Windows **Device Manager**, enable **Show Hidden Devices**, uninstall any stale listings for the board, and reconnect.
-4. **In-Game Binding:** Launch MSFS 2024, head to **Options > Control Options**, select the `Nobs Autopilot` device, and bind your buttons to autopilot commands (see the mapping template below).
+1. **Check for shorts first (before plugging in USB):** use a multimeter to make sure none of your
+   ground wires are accidentally touching a signal wire. This catches wiring mistakes before they
+   reach your PC.
+2. **Load the firmware:** follow the guide for your board — [Arduino Micro](firmware/arduino_micro/README.md)
+   or [Arduino Nano ESP32](firmware/arduino_eps32_nano/README.md).
+3. **Confirm the name:** once plugged in, the panel should show up as `Nobs Autopilot (Vendor: 2341
+   Product: 0657)`. If it shows a generic name instead, open Windows **Device Manager**, turn on
+   **View → Show hidden devices**, uninstall any old listings for the board, and replug it.
+4. **Bind it in the sim:** launch MSFS 2024, go to **Options → Control Options**, pick the
+   **Nobs Autopilot** device, and assign your buttons to autopilot commands (the table below is a
+   ready-made starting point).
 
 ## MSFS 2024 Autopilot Control Mapping Template
 
-This configuration profile maps the panel's hardware HID buttons to the most common default flight simulator autopilot events. It is optimized to cover Heading, Altitude, Vertical Speed, and Airspeed parameters natively.
+Not sure what to bind each knob and switch to? This is a suggested layout that covers the common
+autopilot controls — Heading, Altitude, Vertical Speed, and Airspeed — plus the usual mode
+switches. It's just a starting point; rebind anything to suit how you fly.
 
 ### Recommended Button Assignments
 

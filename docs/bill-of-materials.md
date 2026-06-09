@@ -1,6 +1,18 @@
-# Bill of Materials
+# Bill of Materials (Shopping List)
 
-Complete hardware component list for the Nobs Autopilot — all core electronics, switches, connectors, and structural hardware required to assemble and house the 20-input native USB HID autopilot panel.
+This is the full shopping list for building one Nobs Autopilot panel — every part you need, from
+the electronics to the screws. The tables below group the parts by type. The "Manufacturer /
+Part Number" column lists the exact parts we used, so you can search for them or find equivalents.
+
+A few friendly notes before you start buying:
+
+- **Exact parts aren't mandatory.** The encoders, switches, and Arduino can be swapped for similar
+  parts you like or already have. The part numbers here are just what's known to work.
+- **You can use an Arduino Nano ESP32 instead of the Micro** (item 1.1) — the firmware supports
+  both. See the [firmware guides](../firmware/arduino_eps32_nano/README.md).
+- **The enclosure parts (section 3) are 3D printed** — you print them yourself from the files in
+  the `models/` folder, or have a print service make them.
+- Quantities are for **one** panel.
 
 ## Core Electronics & Switches
 
