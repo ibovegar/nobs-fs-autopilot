@@ -1,6 +1,8 @@
 # Wiring Map — Which Wire Goes Where
 
-This table tells you which pin on the board each wire connects to, for the **Arduino Nano ESP32**.
+This table tells you which pin on the board each wire connects to, for the **Arduino Nano ESP32**
+(the main board for this project). Building with the older **Arduino Micro** instead? Use
+[arduino-micro-wiring.md](arduino-micro-wiring.md) instead.
 
 **How to read a row:** find the part (e.g. "Encoder 1"), look at what it's connecting ("Phase A
 Terminal"), then run a wire from that terminal to the pin listed in the board's column. Pin
@@ -12,6 +14,8 @@ you use that control. You don't wire anything for it.
 
 > 💡 Each control has one wire to its signal pin (from this table) and one wire to **GND**. No
 > resistors or extra parts needed — the firmware handles that.
+>
+> For a visual reference alongside this table, see the [wiring diagram](wiring-diagram.pdf).
 
 | Component Group | Component Label | Hardware Connection | Arduino Nano ESP32 Pin | Virtual HID Button | Action Type |
 | :--- | :--- | :--- | :--- | :--- | :--- |

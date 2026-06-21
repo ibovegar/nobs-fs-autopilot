@@ -1,2 +1,2 @@
-compiler.cpp.extra_flags=-DUSB_VID=0x2341 -DUSB_PID=0x0657 -DUSB_PRODUCT="\"Nobs Autopilot\""
-compiler.c.extra_flags=-DUSB_VID=0x2341 -DUSB_PID=0x0657 -DUSB_PRODUCT="\"Nobs Autopilot\""
+compiler.cpp.extra_flags=-DUSB_VID=0x303A -DUSB_PID=0x80F4 -DUSB_PRODUCT="\"Nobs Autopilot\""
+compiler.c.extra_flags=-DUSB_VID=0x303A -DUSB_PID=0x80F4 -DUSB_PRODUCT="\"Nobs Autopilot\""

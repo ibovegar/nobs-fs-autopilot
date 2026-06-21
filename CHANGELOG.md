@@ -18,5 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MSFS 2024 autopilot control mapping template covering Heading, Altitude, Vertical Speed, and Airspeed.
 - Bundled [Arduino Joystick Library](https://github.com/MHeironimus/ArduinoJoystickLibrary) (v2.1.1) used by the firmware.
 - Placeholder for an ESP32 Nano firmware variant ([firmware/arduino_eps32_nano/](firmware/arduino_eps32_nano/)).
+- Runtime-configurable USB identity for the Arduino Nano ESP32 build: PID and product name are stored in flash (NVS) and can be reassigned over USB serial with `SET_ID`/`GET_ID`, so each physical panel can be told apart by MSFS. Documented in [docs/board-identity.md](docs/board-identity.md).
+- Arduino Micro pinout reference ([docs/arduino-micro-wiring.md](docs/arduino-micro-wiring.md)), split out now that the wiring docs are written around the Nano ESP32.
+
+### Changed
+- The **Arduino Nano ESP32** is now the project's main board; the build instructions, BOM, and wiring docs are written around it, with the Arduino Micro documented as a supported alternative.
+- Both firmware variants now report VID `0x303A` (Espressif's vendor ID) instead of `0x2341`, alongside PID `0x80F4` / "Nobs Autopilot".
+- Corrected the BOM's USB cable spec to USB-C for the Nano ESP32 (was Micro-B, which only applies to the Arduino Micro alternative).
+- Renamed `docs/Wiring diagram.pdf` to `docs/wiring-diagram.pdf` and linked it from the wiring and build-instructions docs.
 
 [Unreleased]: https://github.com/ibovegar/nobs-fs-autopilot/commits/main

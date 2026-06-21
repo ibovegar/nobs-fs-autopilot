@@ -8,8 +8,9 @@ A few friendly notes before you start buying:
 
 - **Exact parts aren't mandatory.** The encoders, switches, and Arduino can be swapped for similar
   parts you like or already have. The part numbers here are just what's known to work.
-- **You can use an Arduino Nano ESP32 instead of the Micro** (item 1.1) — the firmware supports
-  both. See the [firmware guides](../firmware/arduino_eps32_nano/README.md).
+- **Item 1.1 below is the Arduino Nano ESP32, the main board for this project.** You can use an
+  older **Arduino Micro** instead — the firmware supports both. See the
+  [firmware guides](../firmware/arduino_micro/README.md).
 - **The enclosure parts (section 3) are 3D printed** — you print them yourself from the files in
   the `models/` folder, or have a print service make them.
 - Quantities are for **one** panel.
@@ -18,11 +19,11 @@ A few friendly notes before you start buying:
 
 | Item # | Qty | Component Description | Manufacturer / Part Number | Purpose / Application |
 | :--- | :--- | :--- | :--- | :--- |
-| **1.1** | 1 | Arduino Micro (with headers) | Arduino / A000053 | Main microcontroller (ATmega32U4, 5V, USB HID, VID 0x2341 / PID 0x0657) |
+| **1.1** | 1 | Arduino Nano ESP32 (with headers) | Arduino / ABX00083 | Main microcontroller (ESP32-S3, USB HID, VID 0x303A / PID 0x80F4) — or substitute an Arduino Micro (Arduino / A000053) |
 | **1.2** | 4 | High-Reliability Mechanical Rotary Encoder | Bourns / PEC11H-4020F-S0016 | Multi-turn cockpit adjustments (HDG, ALT, V/S, SPD) |
 | **1.3** | 8 | Subminiature SPDT Momentary Toggle Switch | E-Switch / 700SP7B10M2REH | Panel engagement buttons (SW1–SW8) |
 | **1.4** | 1 | Stripboard Prototype Board | BusBoard Prototype Systems / StripBoard-1 | Main sub-assembly chassis carrier board |
-| **1.5** | 2 | Female 2.54 mm Pin Header, 26 positions | — | Sockets soldered to the stripboard to seat the Arduino Micro |
+| **1.5** | 2 | Female 2.54 mm Pin Header, 26 positions | — | Sockets soldered to the stripboard to seat the Arduino board (Nano ESP32 or Micro) |
 | **1.6** | 8 | Fixed Terminal Block (2.54 mm Pitch) | GCT / TBC05-06-1-G-G | Clean screw-down wiring for switches and encoders |
 
 ## Knobs, Caps, Connectors & Wiring
@@ -31,7 +32,7 @@ A few friendly notes before you start buying:
 | :--- | :--- | :--- | :--- | :--- |
 | **2.1** | 4 | Rotary Encoder Knob, 14 × 14.5 mm | Same Sky / SAK-023 | Physical interface dials for the 4 rotary encoders |
 | **2.2** | 8 | Button Cap | C&K / 798209000 | Caps for the 700-series momentary switches |
-| **2.3** | 1 | USB Micro-B to USB-A Cable | 1.5 m to 2 m, data-sync capable | Connects the Arduino Micro to your PC flight simulator setup |
+| **2.3** | 1 | USB-C to USB-A Cable | 1.5 m to 2 m, data-sync capable | Connects the Arduino Nano ESP32 to your PC flight simulator setup (use USB Micro-B instead if building with the Arduino Micro) |
 | **2.4** | 1 | 24 AWG Solid Core Hook-Up Wire Kit | Multi-color pack (black, red, blue, yellow) | Internal point-to-point wiring (signals and ground loops) |
 | **2.5** | 1 | Heat Shrink Tubing Assortment Pack | 1.5 mm to 3.5 mm diameters | Insulates soldered connections on the encoder and switch lugs |
 

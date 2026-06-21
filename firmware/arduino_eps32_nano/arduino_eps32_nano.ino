@@ -6,8 +6,9 @@
 //   buttons 12..19  → 8 standalone switches (SW1..SW8)
 // See docs/arduino-esp-32-wiring.md for the full button + pin table.
 //
-// Host config: the app's Settings page sets encoder acceleration sensitivity over
-// the USB CDC serial port — see the serial protocol near handleSerialConfig().
+// Host config: over the USB CDC serial port the app sets encoder acceleration
+// sensitivity and can reassign the board's USB identity — see the serial protocol
+// near handleSerialConfig().
 //
 // ── Arduino IDE Tools settings (required) ─────────────────────────────────────
 //   Board:        "Arduino Nano ESP32"
@@ -16,10 +17,17 @@
 // No other Tools changes and NO edits to the installed Arduino core are needed — the
 // whole USB-identity fix lives in this repo (this sketch + build_opt.h beside it).
 //
-// ── USB identity (set at runtime; enabled by build_opt.h) ─────────────────────
-// This device must enumerate as VID 0x2341 / PID 0x0657 / "Nobs Autopilot" so the
-// app's gamepad filter selects it (same identity as the Micro build). setup() sets
-// that via USB.VID()/PID()/productName() before USB.begin().
+// ── USB identity: dynamic, stored in NVS (Preferences) ────────────────────────
+// The device enumerates with VID 0x303A (Espressif's vendor ID) and a PID + product
+// name that are *configurable at runtime*. Each Nobs box gets its own PID so MSFS
+// can't mirror/overwrite control bindings across panels. Out of the box this build
+// defaults to PID 0x80F4 / "Nobs Autopilot" (matches the `autopilot` entry in the
+// app's device registry, src/panel/panel.ts).
+//
+// The PID and name live in flash via the native Preferences library (NVS). On boot
+// the firmware reads them *before* USB.begin() and applies them to the descriptor.
+// The configuration app can change them over the USB CDC serial port (see the serial
+// protocol below); after a change the firmware reboots so USB re-enumerates.
 //
 // That only works because the Nano ESP32 normally forces "USB CDC On Boot" and "DFU On
 // Boot" on, which would make the core bring USB up at boot (before setup()), freezing
@@ -38,6 +46,7 @@
 #include "USBHID.h"
 #include "USBCDC.h"
 #include <EEPROM.h>
+#include <Preferences.h>
 
 #if ARDUINO_USB_MODE
 #error "Set Tools > USB Mode to 'Normal mode (TinyUSB)'. Custom HID needs the TinyUSB stack."
@@ -113,6 +122,77 @@ NobsGamepad Joystick;
 // page. Like USBHID, USBCDC registers its interface in its constructor (static init),
 // so it is in place before USB.begin() builds the composite descriptor in setup().
 USBCDC USBSerial;
+
+// ── Dynamic USB identity (NVS via Preferences) ────────────────────────────────
+// VID is fixed (Espressif's vendor ID); PID + product name are stored in flash and
+// host-configurable. Defaults are the autopilot profile; an unconfigured chip uses
+// them. (Acceleration uses the emulated-EEPROM store below; identity uses its own
+// Preferences namespace, so the two don't collide.)
+// NB: named NOBS_USB_VID, not USB_VID — the core's pins_arduino.h #defines USB_VID.
+const uint16_t NOBS_USB_VID  = 0x303A;
+const uint16_t DEFAULT_PID   = 0x80F4;
+const char*    DEFAULT_NAME  = "Nobs Autopilot";
+const char*    NVS_NAMESPACE = "nobs";
+const char*    NVS_KEY_PID   = "pid";
+const char*    NVS_KEY_NAME  = "name";
+
+Preferences prefs;
+uint16_t     usbPid;  // active PID (kept alive for the whole session)
+String       usbName; // active product name (c_str() must outlive USB.begin())
+
+void loadIdentity() {
+  prefs.begin(NVS_NAMESPACE, true); // read-only
+  usbPid  = prefs.getUShort(NVS_KEY_PID, DEFAULT_PID);
+  usbName = prefs.getString(NVS_KEY_NAME, DEFAULT_NAME);
+  prefs.end();
+}
+
+void storeIdentity(uint16_t pid, const String& name) {
+  prefs.begin(NVS_NAMESPACE, false); // read-write
+  prefs.putUShort(NVS_KEY_PID, pid);
+  prefs.putString(NVS_KEY_NAME, name);
+  prefs.end();
+}
+
+// ── USB string descriptors: name the interfaces after the product ─────────────
+// The core hardcodes the HID/CDC *interface* strings to "TinyUSB HID"/"TinyUSB CDC".
+// For a composite device (HID + CDC) Windows and MSFS show that interface string as
+// the controller's name — so without this it shows up as "TinyUSB HID" even though
+// iProduct is "Nobs Autopilot". tud_descriptor_string_cb is weak in the core, so
+// defining it here replaces it (no core edit needed) and points every interface
+// string at the product name. Index map: 0=language, 1=manufacturer, 2=product,
+// 3=serial (from the chip MAC, stable per board), 4+=interface strings → product.
+extern "C" const uint16_t* tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
+  (void)langid;
+  static uint16_t desc[40];
+
+  if (index == 0) {
+    desc[1] = 0x0409; // English (United States)
+    desc[0] = (uint16_t)((3 << 8) | (2 * 1 + 2));
+    return desc;
+  }
+  // Beyond our real strings (1..3 + a handful of interface strings). Returning NULL
+  // mirrors the core and lets Windows' MS-OS probe at index 0xEE fail cleanly.
+  if (index >= 16) return NULL;
+
+  char serial[16];
+  const char* str;
+  switch (index) {
+    case 1: str = "Arduino"; break;       // manufacturer (matches USB.manufacturerName)
+    case 2: str = usbName.c_str(); break; // product (iProduct)
+    case 3:                               // serial — stable per board
+      snprintf(serial, sizeof(serial), "%012llX", (unsigned long long)ESP.getEfuseMac());
+      str = serial;
+      break;
+    default: str = usbName.c_str(); break; // HID/CDC/config interface strings
+  }
+
+  uint8_t chr_count = strlen(str);
+  if (chr_count > 38) chr_count = 38; // desc holds 39 UTF-16 chars + the header word
+  for (uint8_t i = 0; i < chr_count; i++) desc[1 + i] = str[i];
+  desc[0] = (uint16_t)((3 << 8) | (2 * chr_count + 2));
+  return desc;
+}
 
 // ── Pin assignments (Arduino Nano ESP32 labels — see arduino-esp-32-wiring.md) ─
 // Encoders: A/B quadrature pins + S push button. Encoder common (C) and the
@@ -217,12 +297,19 @@ int           pulseBtn[4];   // which button that press is on
 unsigned long phaseUntil[4]; // millis() when the current on/gap phase ends
 
 // ── Host serial config ───────────────────────────────────────────────────────
-// Line protocol over the USB CDC port (the app's Settings page). Each encoder has
-// its own acceleration sensitivity, addressed by a single-digit index i (0..3):
+// Line protocol over the USB CDC port (the app's Settings page).
+//
+// Acceleration — each encoder has its own sensitivity, addressed by a single-digit
+// index i (0..3):
 //   "A<i><n>\n"  set encoder i sensitivity to n (0..255), persisted to EEPROM
 //   "A<i>?\n"    query encoder i sensitivity
 // Either way we reply "A<i>=<n>\n" so the host can confirm/read the stored value.
-char    cmdBuf[8];
+//
+// Identity — reassign the board's USB PID + product name (persisted to NVS):
+//   "SET_ID:<pidHex>:<name>\n"  store PID (hex, e.g. 80F4) + name, then soft-reboot
+//                               so the new identity takes effect; replies "OK:<pid>:<name>"
+//   "GET_ID\n"                  reply "ID:<pidHex>:<name>" with the stored values
+char    cmdBuf[64];
 uint8_t cmdLen = 0;
 
 void applyAccelCommand(const char* s) {
@@ -243,17 +330,63 @@ void applyAccelCommand(const char* s) {
   USBSerial.println(accelSens[i]);
 }
 
+void printIdentity(const char* prefix) {
+  char pidHex[5];
+  snprintf(pidHex, sizeof(pidHex), "%04X", usbPid);
+  USBSerial.print(prefix);
+  USBSerial.print(':');
+  USBSerial.print(pidHex);
+  USBSerial.print(':');
+  USBSerial.println(usbName);
+}
+
+void applyIdCommand(const char* s) {
+  if (strcmp(s, "GET_ID") == 0) {
+    printIdentity("ID");
+    return;
+  }
+  if (strncmp(s, "SET_ID:", 7) != 0) return;
+
+  const char* p     = s + 7;          // "<pidHex>:<name>"
+  const char* colon = strchr(p, ':');
+  if (!colon || colon == p) return;   // need a PID and a separator
+
+  char pidStr[8] = { 0 };
+  size_t n = colon - p;
+  if (n >= sizeof(pidStr)) return;
+  memcpy(pidStr, p, n);
+  uint16_t pid = (uint16_t)strtol(pidStr, nullptr, 16);
+
+  String name = colon + 1;            // everything after the second ':'
+  name.trim();
+  if (name.length() == 0) return;
+
+  storeIdentity(pid, name);
+  usbPid  = pid;                       // reflect the just-stored values
+  usbName = name;
+  printIdentity("OK");
+  USBSerial.flush();
+  delay(50);                           // let the CDC packet drain before reset
+  ESP.restart();
+}
+
+void applyConfigCommand(const char* s) {
+  if (strncmp(s, "SET_ID:", 7) == 0 || strcmp(s, "GET_ID") == 0) applyIdCommand(s);
+  else applyAccelCommand(s);
+}
+
 void handleSerialConfig() {
   while (USBSerial.available()) {
     char c = USBSerial.read();
     if (c == '\n' || c == '\r') {
       cmdBuf[cmdLen] = '\0';
-      if (cmdLen > 0) applyAccelCommand(cmdBuf);
+      if (cmdLen > 0) applyConfigCommand(cmdBuf);
       cmdLen = 0;
     } else if (cmdLen < sizeof(cmdBuf) - 1) {
       cmdBuf[cmdLen++] = c;
+    } else {
+      cmdLen = 0; // overlong line (no newline) — drop it and resync
     }
-    // Overlong tokens (no newline) are dropped once the buffer fills.
   }
 }
 
@@ -277,13 +410,17 @@ void setup() {
   EEPROM.begin(EEPROM_SIZE);
   for (uint8_t i = 0; i < 4; i++) accelSens[i] = EEPROM.read(EEPROM_ADDR_ACCEL + i);
 
-  // USB identity — set BEFORE USB.begin() so the descriptor is built with VID 0x2341 /
-  // PID 0x0657 / "Nobs Autopilot" (matches the Micro, so the app's gamepad filter picks
-  // it up). This works because build_opt.h disabled CDC/DFU-on-boot, so USB has NOT
-  // been started yet (see the header).
-  USB.VID(0x2341);
-  USB.PID(0x0657);
-  USB.productName("Nobs Autopilot");
+  // Load the saved identity (PID + name) from NVS, falling back to the autopilot
+  // defaults on a fresh chip.
+  loadIdentity();
+
+  // USB identity — set BEFORE USB.begin() so the descriptor is built with the stored
+  // VID/PID/name (defaults: VID 0x303A / PID 0x80F4 / "Nobs Autopilot", matching the
+  // app's gamepad filter). This works because build_opt.h disabled CDC/DFU-on-boot, so
+  // USB has NOT been started yet (see the header).
+  USB.VID(NOBS_USB_VID);
+  USB.PID(usbPid);
+  USB.productName(usbName.c_str());
   USB.manufacturerName("Arduino");
 
   Joystick.begin();        // create the HID report semaphores/mutex

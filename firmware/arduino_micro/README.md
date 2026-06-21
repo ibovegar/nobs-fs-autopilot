@@ -4,12 +4,15 @@ This is the program (the "firmware") that runs on an **Arduino Micro** board and
 USB game controller for your flight sim. Once it's loaded, the board shows up to your PC and to
 the Nobs app as **"Nobs Autopilot"** with 20 buttons (4 knobs + 8 switches).
 
-> **Which board do you have?** This page is for the **Arduino Micro**. If you're using an
-> **Arduino Nano ESP32**, follow [the Nano ESP32 guide](../arduino_eps32_nano/README.md) instead.
+> **Which board do you have?** This page is for the **Arduino Micro**, an alternative to the
+> project's main board. If you're using the **Arduino Nano ESP32**, follow
+> [the Nano ESP32 guide](../arduino_eps32_nano/README.md) instead. Note: only the Nano ESP32 build
+> can have its name/ID changed later by the configuration app. On the Micro the USB ID is fixed
+> when you build it (set in Step 1 below).
 
 For the board to show up as "Nobs Autopilot" (and be picked up automatically by the Nobs app),
-it needs to report a specific **USB ID** — two numbers the PC uses to recognise it (`2341` and
-`0657`). There's a one-time setup to make that happen, then loading the firmware is easy.
+it needs to report a specific **USB ID** — two numbers the PC uses to recognise it (`303A` and
+`80F4`). There's a one-time setup to make that happen, then loading the firmware is easy.
 
 ---
 
@@ -29,8 +32,8 @@ have to do this **once** on your computer.
    lines with this:
    ```
    micro.name=Nobs Autopilot
-   micro.build.vid=0x2341
-   micro.build.pid=0x0657
+   micro.build.vid=0x303A
+   micro.build.pid=0x80F4
    micro.build.usb_product="Nobs Autopilot"
    ```
 6. **Save** the file and reopen the Arduino IDE.
@@ -56,10 +59,10 @@ That's it.
 Once connected, the board should introduce itself to your PC as:
 
 ```
-Nobs Autopilot (Vendor: 2341 Product: 0657)
+Nobs Autopilot (Vendor: 303a Product: 80f4)
 ```
 
-The Nobs app looks for exactly that USB ID (`2341` / `0657`), so it automatically picks the right
+The Nobs app looks for exactly that USB ID (`303a` / `80f4`), so it automatically picks the right
 controller even if you have other game controllers plugged in.
 
 > **Seeing a generic name instead?** Open Windows **Device Manager**, turn on **View → Show

@@ -1,5 +1,9 @@
 # Nobs Autopilot — Arduino Nano ESP32 Firmware
 
+> **Which board do you have?** This page is for the **Arduino Nano ESP32**, the main board for
+> this project. If you're using the older **Arduino Micro** instead, follow
+> [the Arduino Micro guide](../arduino_micro/README.md).
+
 This is the program (the "firmware") that runs on an **Arduino Nano ESP32** board and turns it
 into a USB game controller for Microsoft Flight Simulator. Once it's loaded, the board shows up
 to your PC and to the Nobs app as **"Nobs Autopilot"** with **20 buttons**:
@@ -64,8 +68,12 @@ That's it — no other settings to change.
 2. Plug in the board.
 3. Click the **Upload** button (the round arrow, top-left).
 
-The **first** time, this just works. 🎉 When it's done, the board reconnects as **Nobs
-Autopilot** and you can use it in the app.
+The **first** time, this just works. 🎉 When it's done, the board reconnects as **Nobs Autopilot**
+and you can use it in the app.
+
+> The board's name and product ID aren't baked into the firmware — they're stored on the board and
+> can be changed later by the configuration app (see [Changing the board's
+> identity](#changing-the-boards-identity-advanced)). Out of the box it's **"Nobs Autopilot"**.
 
 ---
 
@@ -132,6 +140,43 @@ there, just listed in a confusing way by default. The easy fix:
 > In Device Manager, click the **View** menu → **Devices by container**. Now the board shows up
 > as a single entry named **Nobs Autopilot**. ✅
 
+---
+
+## Changing the board's identity (advanced)
+
+Every Nobs box needs its own **product ID (PID)** and name so MSFS keeps their button bindings
+separate. This board uses vendor ID `303A` and defaults to PID `80F4` / name **"Nobs Autopilot"** —
+but those aren't compiled in. They're stored on the board and can be changed without re-flashing,
+which is how the same firmware can be set up as any Nobs profile.
+
+The configuration app does this for you over the board's COM port by sending a single line:
+
+```
+SET_ID:80F4:Nobs Autopilot
+```
+
+(`80F4` is the PID in hex; the text after it is the name.) The board saves the new values to its
+internal memory, replies `OK:80F4:Nobs Autopilot`, and then **reboots itself** so the new identity
+takes effect. Send `GET_ID` to read back what's currently stored (it replies `ID:80F4:Nobs Autopilot`).
+
+Each product owns a **block of PIDs** so you can run several of the same type — each physical unit
+takes the next PID in the block and a numbered name (module 1 keeps the bare name and the block's
+first PID, its default):
+
+| Profile | Vendor ID | PID block | Module 1 command |
+| :------ | :-------- | :-------- | :--------------- |
+| Nobs Panel | `303A` | `80F0`–`80F3` | `SET_ID:80F0:Nobs Panel` |
+| Nobs Autopilot | `303A` | `80F4`–`80F7` | `SET_ID:80F4:Nobs Autopilot` |
+| Nobs Approach | `303A` | `80F8`–`80FB` | `SET_ID:80F8:Nobs Approach` |
+
+So a second autopilot would be `SET_ID:80F5:Nobs Autopilot 2`, a third `SET_ID:80F6:Nobs Autopilot 3`,
+and so on.
+
+> After changing the name, if Windows still shows the old one in **Game Controllers** or MSFS,
+> force a refresh: in **Device Manager → Human Interface Devices**, right-click the controller →
+> **Uninstall device**, then unplug the USB cable, wait ~2 seconds, and plug it back in. Windows
+> re-reads the name fresh.
+
 (In the normal view, one USB gadget like this gets split into a few separate generic-looking
 entries — a "game controller", a "COM port", and a "USB Composite Device" — which is why it can
 look like it's missing.)
@@ -152,10 +197,6 @@ look like it's missing.)
 
 ## Things that look wrong but are totally fine
 
-- **The browser shows "TinyUSB CDC" or "TinyUSB HID" when picking the device.** The real device
-  name *is* "Nobs Autopilot" and the app finds it correctly — this other label is just an
-  internal name for one part of the device. It's harmless. (We could rename it, but only by
-  editing Arduino's own files, which we avoid so the project stays self-contained.)
 - **A yellow light on the board stays on.** That's normal here — one of the knob wires shares the
   board's built-in LED pin, so the light is on whenever the firmware runs. If it bothers you, you
   can move that one wire to pin **D2** or **D4** and update the firmware + wiring diagram to match.
@@ -168,18 +209,20 @@ You can skip this — it's just for the curious or for anyone maintaining the pr
 
 ### Why uploading needs the extra steps
 
-A USB device tells your PC who it is using two ID numbers (called **VID** and **PID**). We need
-this board to use the *same* IDs as the original Micro version (`2341` / `0657`) so the Nobs app
-recognises it the same way.
+A USB device tells your PC who it is using two ID numbers (called **VID** and **PID**) plus a
+name. This board uses vendor ID `303A` and, by default, PID `80F4` / "Nobs Autopilot" so the Nobs
+app recognises it. The PID and name aren't compiled in — the firmware reads them from the board's
+internal memory at startup, which is what lets the [configuration
+app](#changing-the-boards-identity-advanced) reassign the board to a different Nobs profile.
 
 The tricky part: the Nano ESP32 normally locks in its ID numbers the instant it powers on,
 *before* our firmware gets a chance to run — and it also hard-codes the "wrong" ID. So we use a
 tiny helper file, **`build_opt.h`**, that sits next to the firmware. The Arduino IDE
 automatically applies the settings in that file when it builds, which tells the board *not* to
-start USB at power-on. That gives our firmware the opening it needs to set the correct ID, name,
-buttons, and serial port itself, the moment it starts. (There's also a built-in safety check
-that refuses to build if `build_opt.h` ever goes missing, so the board can never quietly get the
-wrong ID.)
+start USB at power-on. That gives our firmware the opening it needs to read the stored ID/name
+and set the right identity, buttons, and serial port itself, the moment it starts. (There's also
+a built-in safety check that refuses to build if `build_opt.h` ever goes missing, so the board
+can never quietly get the wrong ID.)
 
 Because the board now reports the *custom* ID, the Arduino IDE's normal "auto-restart for
 upload" can't find it — which is exactly why re-uploads need the manual double-tap into update
@@ -191,7 +234,9 @@ mode.
 - Reads the 4 rotary knobs with proper quadrature decoding, and turns each "click" of the knob
   into a quick button press so even fast spinning is counted correctly in MSFS. Each knob also
   has adjustable acceleration (turn faster = bigger jumps), saved on the board.
-- Provides a serial port so the Nobs app's Settings page can tweak that acceleration.
+- Provides a serial port so the Nobs app's Settings page can tweak that acceleration, and so the
+  configuration app can change the board's USB ID/name (see [Changing the board's
+  identity](#changing-the-boards-identity-advanced)).
 - Reads the 8 switches as plain buttons.
 
 The exact pin-to-wire mapping is in the [wiring diagram](../../docs/arduino-esp-32-wiring.md).
