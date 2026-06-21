@@ -26,5 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both firmware variants now report VID `0x303A` (Espressif's vendor ID) instead of `0x2341`, alongside PID `0x80F4` / "Nobs Autopilot".
 - Corrected the BOM's USB cable spec to USB-C for the Nano ESP32 (was Micro-B, which only applies to the Arduino Micro alternative).
 - Renamed `docs/Wiring diagram.pdf` to `docs/wiring-diagram.pdf` and linked it from the wiring and build-instructions docs.
+- Moved the build instructions out of the README into their own guide ([docs/build-instructions.md](docs/build-instructions.md)), and rewrote the Assembly Instructions there to match the real heat-set-insert/direct-mount build (replacing the outdated stripboard/terminal-block steps), with photos of each stage ([images/](images/)).
 
 [Unreleased]: https://github.com/ibovegar/nobs-fs-autopilot/commits/main
