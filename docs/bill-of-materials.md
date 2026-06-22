@@ -56,4 +56,25 @@ A few friendly notes before you start buying:
 * **Wire Strippers & Flush Cutters:** For clean trimming and prepping of your 24 AWG signal cables.
 * **Soldering Iron / Insert Tool for Heat-Set Inserts:** For pressing the brass inserts squarely into the 3D-printed parts.
 * **Multimeter:** Crucial for testing continuity and checking for short circuits across your common ground loops before plugging into USB power.
+
+## Project Costs
+
+Rough cost estimate for a single panel, in USD. These are ballpark figures only, actual prices vary significantly by supplier, region, and quantity, and **exclude shipping and taxes**. Several items (wire, heat-shrink, screws, inserts) are sold in multi-build packs, so the per-build cost is lower if you build more than one or already have them on hand.
+
+| Category | Items | Estimated Cost |
+| :--- | :--- | ---: |
+| Microcontroller | Arduino Nano ESP32 (genuine; clones are cheaper) | $20 – $28 |
+| Rotary encoders | 4 × Bourns PEC11H | $10 – $15 |
+| Switches | 8 × E-Switch 700-series momentary | $25 – $35 |
+| Board & wiring | Stripboard, pin headers, 8 × terminal blocks | $12 – $18 |
+| Knobs & caps | 4 × encoder knobs, 8 × button caps | $15 – $25 |
+| Connectors & consumables | USB cable, hook-up wire kit, heat-shrink | $20 – $25 |
+| Fasteners | Heat-set inserts, M3/M4 screws | $10 – $18 |
+| Enclosure (3D printed) | Filament for top, bottom, mounting plate, front plate | $5 – $15 |
+| **Total** | | **≈ $120 – $180** |
+
+> **Notes:**
+> * The **enclosure** assumes you print the parts yourself (filament cost only). Ordering them from a print service will add roughly $30 – $80.
+> * Choosing an **Arduino Nano ESP32 clone** instead of a genuine board can cut $10 – $15 off the total.
+> * Bulk/pack purchasing of consumables and fasteners spreads their cost across multiple builds, lowering the effective per-panel total.
 </content>

@@ -2,8 +2,9 @@
 
 These are the hands-on build steps for the Nobs Autopilot panel: how to wire it,
 how to assemble it, and how to verify it before binding in the sim. For the project
-overview, parts list, costs, firmware loading, and the in-sim control mapping, see the
-[main README](../README.md).
+overview, firmware loading, and the in-sim control mapping, see the
+[main README](../README.md). For the parts list and cost estimate, see
+[bill-of-materials.md](bill-of-materials.md).
 
 The wiring table and steps below show the **Arduino Nano ESP32** build — the main board for this
 project. If you're using the older Arduino Micro instead, use the pin column for it in
@@ -79,73 +80,58 @@ Here's how the panel goes together, in order, with a photo of the real build at 
 There's soldering involved, so take your time and work in a well-lit, ventilated spot. Don't
 rush — it's much easier to get each joint right the first time than to fix it later.
 
-### Phase 1: Heat-Set Inserts
+The build happens in four stages: (1) build the little breakout board the Arduino sits on, (2)
+wire up the switches and knobs, (3) mount everything to the front plate, and (4) close it all up
+in the case.
 
-![Enclosure bottom with heat-set inserts installed](../images/assembly_1.png)
+### Phase 1: Breakout Board Assembly
+
+![Bare stripboard](../images/controller_assembly_1.png)
+
+* **Fit Headers:** Position female socket headers onto the stripboard to seat your Arduino board
+  (Nano ESP32 or Micro — the same stripboard layout fits either) and solder them from underneath.
+
+  ![Female socket headers fitted to the stripboard](../images/controller_assembly_2.png)
+* **Mount Terminal Blocks:** Place the screw terminal blocks flanking the socket headers on the
+  stripboard and solder them into place.
+
+  ![Terminal blocks mounted alongside the headers](../images/controller_assembly_3.png)
+* **Bridge Traces:** Ensure the copper traces on the stripboard securely connect each header pin
+  footprint directly to its corresponding terminal block clamping slot.
+* **Isolate Rails:** Use a track cutter or utility knife to score and break any copper traces
+  running between opposing header pin rows to prevent short circuits.
+* **Seat the Microcontroller:** Carefully align your Arduino board's pins with the female headers
+  on the stripboard. Press down uniformly until fully seated.
+
+  ![Arduino board seated in the finished breakout board](../images/controller_assembly_4.png)
+
+### Phase 2: Component Pre-Wiring
+* **Prep Signal Lines:** Cut hook-up wire into 15–20 cm lengths. Strip 3 mm of insulation off both ends of each wire run.
+* **Wire the Switches:** Slide heat shrink tubing over your wires. Solder a signal wire to the N.O. terminal and a ground wire to the common terminal of each switch. Leave the N.C. terminal disconnected. Shrink the tubing over the joints.
+* **Wire the Encoders:** Solder independent signal lines to Phase A and Phase B. Solder a third line to one push-switch terminal, and bridge the middle ground terminal to the second push-switch terminal with a shared wire.
+* **Construct Ground Harness:** Tie the ground wires from all encoders and switches together into a unified, clean common ground harness to minimize terminal usage.
+
+### Phase 3: Faceplate Assembly
+* **Install Hardware:** Insert the pre-wired switches and encoders through the mounting holes from the back of the front plate.
+* **Tighten Fasteners:** Secure the components to the front plate using their included washers and hex nuts. Tighten firmly by hand, avoiding excessive torque on the plastic.
+* **Attach Knobs:** Push the interface knobs onto the encoder shafts, aligning any internal flats with the shaft profiles.
+* **Join Faceplate to Shell:** Align the completed front plate with the enclosure top. Secure them together using the designated M3 countersunk screws.
+
+### Phase 4: Enclosure Integration
+
+![Enclosure bottom with heat-set inserts and standoff posts installed](../images/enclosure_assembly_1.png)
 
 * **Press in the Inserts:** Using a soldering iron (or a dedicated insert tool) heated to the
-  insert manufacturer's recommended temperature, press each M3/M4 heat-set insert squarely into
-  its mounting post on the enclosure bottom. Go in slowly and keep the insert level — a crooked
-  insert is the most common mistake here.
-* **Do the Enclosure Top Too:** The enclosure top takes the same heat-set inserts in the same way.
-  It isn't pictured separately — just repeat this step for it before moving on.
+  insert manufacturer's recommended temperature, press the heat-set inserts squarely into the
+  enclosure bottom's mounting posts. Do the same for the enclosure top — it isn't pictured
+  separately, but takes the same inserts the same way.
+* **Mount the Base Board:** Secure the completed breakout board sub-assembly into the enclosure
+  bottom using the M3 pan-head screws.
 
-![Mounting plate with heat-set inserts installed](../images/assembly_2.png)
-
-* **Mounting Plate:** Press heat-set inserts into the mounting plate's posts the same way.
-
-### Phase 2: Switches and Encoders
-
-![Switches and encoders mounted in the front plate](../images/assembly_3.png)
-
-* **Place the Switches and Encoders:** Insert the 8 toggle switches and 4 rotary encoders into
-  their cutouts in the front plate, in the layout shown. Secure each one with its included washer
-  and hex nut, tightened firmly by hand — avoid over-torquing the plastic.
-* **Wire Them Up:** Following the [Hardware Connection Scheme](#hardware-connection-scheme) table
-  above, solder a signal wire to each switch's N.O. terminal and each encoder's Phase A / Phase B /
-  push-switch terminals, and tie all the ground terminals together into a common ground harness.
-  Leave each switch's N.C. terminal disconnected. Slide heat shrink tubing over each joint before
-  soldering and shrink it down afterward.
-
-### Phase 3: Mounting Plate and Controller Board
-
-![Mounting plate and controller board attached to the enclosure bottom](../images/assembly_4.png)
-
-* **Attach the Mounting Plate:** Fix the mounting plate to the rear of the enclosure bottom using
-  the M4 × 6 mm socket-head screws.
-* **Mount the Controller Board:** Secure the Arduino (Nano ESP32 or Micro) onto its standoffs in
-  the enclosure bottom using the M3 pan-head screws.
-
-### Phase 4: Mount the Front Plate
-
-![Front plate mounted onto the enclosure, with wires routed to the controller board](../images/assembly_5.png)
-
-* **Route the Wires:** Feed the switch/encoder wire bundle from Phase 2 through the enclosure to
-  the controller board, and solder each signal wire to its pin per the wiring table, and the
-  common ground harness to a GND pin.
-* **Join Front Plate to Shell:** Align the front plate (with switches and encoders already
-  mounted) with the enclosure, and secure it with the designated M3 countersunk screws.
-
-### Phase 5: Caps and Knobs
-
-![Switch caps and encoder knobs being fitted](../images/assembly_6.png)
-
-* **Fit the Switch Caps:** Press a button cap onto each of the 8 toggle switches.
-* **Fit the Encoder Knobs:** Push an encoder knob onto each of the 4 rotary encoder shafts,
-  aligning any internal flats with the shaft profile.
-
-### Phase 6: Close Up the Enclosure
-
-![Enclosure top about to be secured over the populated bottom half](../images/assembly_7.png)
-
-* **Secure Case Shells:** Lower the enclosure top onto the bottom half, making sure no wires are
-  pinched, and lock the two shells together with the M4 × 26 mm socket-head screws.
-
-### Phase 7: Finished Panel
-
-![Fully assembled Nobs Autopilot](../images/assembly_8.png)
-
-That's a complete, assembled Nobs Autopilot panel, ready for the verification steps below.
+  ![Breakout board sub-assembly mounted on standoffs in the enclosure bottom](../images/enclosure_assembly_3.png)
+* **Terminate Wires:** Route the front-plate wire bundles neatly through the case. Insert each individual signal wire into its designated screw terminal block port and lock down firmly.
+* **Attach Mounting Plate:** Fix the mounting plate bracket to the rear of the enclosure bottom using the M4 × 6 mm socket-head screws.
+* **Secure Case Shells:** Close the enclosure top and bottom halves together, ensuring no wires are pinched. Lock the shell with the M4 × 26 mm socket-head screws.
 
 ## Verification & First-Time Setup
 
@@ -158,6 +144,4 @@ That's a complete, assembled Nobs Autopilot panel, ready for the verification st
    Product: 80f4)`. If it shows a generic name instead, open Windows **Device Manager**, turn on
    **View → Show hidden devices**, uninstall any old listings for the board, and replug it.
 4. **Bind it in the sim:** launch MSFS 2024, go to **Options → Control Options**, pick the
-   **Nobs Autopilot** device, and assign your buttons to autopilot commands (the
-   [MSFS 2024 mapping template](../README.md#msfs-2024-autopilot-control-mapping-template) in the
-   README is a ready-made starting point).
+   **Nobs Autopilot** device, and assign your buttons to autopilot commands.
