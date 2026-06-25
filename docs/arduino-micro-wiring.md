@@ -1,7 +1,7 @@
-# Wiring Map — Which Wire Goes Where
+# Wiring Map: Which Wire Goes Where
 
 This table tells you which pin on the board each wire connects to, for the **Arduino Micro** (the
-older, alternative board — the main build uses the **Arduino Nano ESP32**; see
+older, alternative board; the main build uses the **Arduino Nano ESP32**; see
 [arduino-esp-32-wiring.md](arduino-esp-32-wiring.md)).
 
 **How to read a row:** find the part (e.g. "Encoder 1"), look at what it's connecting ("Phase A
@@ -13,7 +13,7 @@ The "Virtual HID Button" column is just for reference: it's the button number th
 you use that control. You don't wire anything for it.
 
 > 💡 Each control has one wire to its signal pin (from this table) and one wire to **GND**. No
-> resistors or extra parts needed — the firmware handles that.
+> resistors or extra parts needed; the firmware handles that.
 >
 > For a visual reference alongside this table, see the [wiring diagram](wiring-diagram.pdf).
 
@@ -42,5 +42,5 @@ you use that control. You don't wire anything for it.
 | **Ground Loop** | All Components | Common / GND Terminals | **GND** | *None* | System Ground |
 
 > **Pin notes:**
-> * Encoder 4's push switch sits on **D16 (MOSI)** rather than the adjacent D17 — D17 drives the on-board RX LED, which holds the line low and would register a phantom press.
+> * Encoder 4's push switch sits on **D16 (MOSI)** rather than the adjacent D17, because D17 drives the on-board RX LED, which holds the line low and would register a phantom press.
 > * Encoder 4's Phase A/B share the **D0/D1** UART pins. These stay free for digital I/O because the Arduino Micro talks to the host over native USB CDC, not the hardware UART.

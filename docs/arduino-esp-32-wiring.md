@@ -1,4 +1,4 @@
-# Wiring Map — Which Wire Goes Where
+# Wiring Map: Which Wire Goes Where
 
 This table tells you which pin on the board each wire connects to, for the **Arduino Nano ESP32**
 (the main board for this project). Building with the older **Arduino Micro** instead? Use
@@ -13,7 +13,7 @@ The "Virtual HID Button" column is just for reference: it's the button number th
 you use that control. You don't wire anything for it.
 
 > 💡 Each control has one wire to its signal pin (from this table) and one wire to **GND**. No
-> resistors or extra parts needed — the firmware handles that.
+> resistors or extra parts needed; the firmware handles that.
 >
 > For a visual reference alongside this table, see the [wiring diagram](wiring-diagram.pdf).
 

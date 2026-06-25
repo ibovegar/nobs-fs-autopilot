@@ -1,4 +1,4 @@
-# Nobs Autopilot — Arduino Micro Firmware
+# Nobs Autopilot: Arduino Micro Firmware
 
 This is the program (the "firmware") that runs on an **Arduino Micro** board and turns it into a
 USB game controller for your flight sim. Once it's loaded, the board shows up to your PC and to
@@ -11,12 +11,10 @@ the Nobs app as **"Nobs Autopilot"** with 20 buttons (4 knobs + 8 switches).
 > when you build it (set in Step 1 below).
 
 For the board to show up as "Nobs Autopilot" (and be picked up automatically by the Nobs app),
-it needs to report a specific **USB ID** — two numbers the PC uses to recognise it (`303A` and
+it needs to report a specific **USB ID**: two numbers the PC uses to recognise it (`303A` and
 `80F4`). There's a one-time setup to make that happen, then loading the firmware is easy.
 
----
-
-## Step 1 — One-time setup: give the board its name
+## Step 1: One-time setup to give the board its name
 
 This step tells the Arduino IDE to build the firmware with the right name and USB ID. You only
 have to do this **once** on your computer.
@@ -41,18 +39,14 @@ have to do this **once** on your computer.
 > This only changes your own computer's Arduino setup. It doesn't change the project files, and
 > anyone you give a finished, already-flashed board to doesn't need to do any of this.
 
----
-
-## Step 2 — Load the firmware
+## Step 2: Load the firmware
 
 1. Open `arduino_micro.ino` (in this folder) in the Arduino IDE.
-2. Go to **Tools → Board** and select **Nobs Autopilot** (that's the Arduino Micro — it shows the
+2. Go to **Tools → Board** and select **Nobs Autopilot** (that's the Arduino Micro; it shows the
    new name now because of Step 1).
 3. Plug in the board and click **Upload** (the round arrow).
 
 That's it.
-
----
 
 ## Check that it worked
 

@@ -1,6 +1,6 @@
-# Nobs Autopilot — DIY VR-Friendly Autopilot Panel
+# Nobs Autopilot: DIY VR-Friendly Autopilot Panel
 
-A build-it-yourself control panel for flight simulators — **4 rotary encoders** and **8 toggle
+A build-it-yourself control panel for flight simulators, with **4 rotary encoders** and **8 toggle
 switches** wired to an **Arduino Nano ESP32** (an older **Arduino Micro** is also supported). It
 plugs in over USB and shows up as a standard game controller (HID gamepad) named **"Nobs
 Autopilot"**, recognised directly by MSFS or DCS and the Nobs app, with no drivers to install.
@@ -23,32 +23,32 @@ memory and physical feedback**:
 
 ## Docs
 
-- **[Build instructions](docs/build-instructions.md)** — wiring map, physical pinout reference,
+- **[Build instructions](docs/build-instructions.md)**: wiring map, physical pinout reference,
   step-by-step assembly with photos, and first-time verification.
-- **[Which wire goes where](docs/arduino-esp-32-wiring.md)** — the button + pin map for the Nano
+- **[Which wire goes where](docs/arduino-esp-32-wiring.md)**: the button + pin map for the Nano
   ESP32 build.
-- **[Loading the firmware](firmware/arduino_eps32_nano/README.md)** — first-time flashing and
+- **[Loading the firmware](firmware/arduino_eps32_nano/README.md)**: first-time flashing and
   re-flashing, step by step.
-- **[Setting the device ID & name](docs/board-identity.md)** — how the board names itself, how to
+- **[Setting the device ID & name](docs/board-identity.md)**: how the board names itself, how to
   rename it, and how to run several boxes at once.
-- **[Bill of materials](docs/bill-of-materials.md)** — parts list and project cost estimate.
+- **[Bill of materials](docs/bill-of-materials.md)**: parts list and project cost estimate.
 
 ## Using an Arduino Micro instead of the Nano ESP32
 
 This guide is written around the **Arduino Nano ESP32**, but the project still fully supports the
-older **Arduino Micro** — it ends up as the same **"Nobs Autopilot"** device (`303A` / `80F4`) and
+older **Arduino Micro**; it ends up as the same **"Nobs Autopilot"** device (`303A` / `80F4`) and
 behaves identically in the sim, except its name/ID are fixed at compile time instead of
 reconfigurable (see [docs/board-identity.md](docs/board-identity.md)). If you go with the Micro,
 two things differ:
 
-1. **Wiring pins** — use [docs/arduino-micro-wiring.md](docs/arduino-micro-wiring.md) instead of
+1. **Wiring pins:** use [docs/arduino-micro-wiring.md](docs/arduino-micro-wiring.md) instead of
    the Nano ESP32 pin table in the [build instructions](docs/build-instructions.md).
-2. **Loading the firmware** — follow
+2. **Loading the firmware:** follow
    [firmware/arduino_micro/README.md](firmware/arduino_micro/README.md) instead (it needs a
    one-time `boards.txt` edit to set the board's USB name/ID before the first upload).
 
-Everything else — the parts list (just swap the board), the 3D-printed enclosure, the assembly
-steps, the Nobs app, and the in-sim binding — is unchanged.
+Everything else is unchanged: the parts list (just swap the board), the 3D-printed enclosure, the
+assembly steps, the Nobs app, and the in-sim binding.
 
 ## Nobs FS Companion App
 
@@ -69,7 +69,7 @@ See the app repository for installation and usage details: <https://github.com/i
 
 ## Setting the device ID & name (in brief)
 
-The board's name and USB product ID aren't compiled in — they're stored on the board (Nano ESP32
+The board's name and USB product ID aren't compiled in: they're stored on the board (Nano ESP32
 build only), so the same firmware can be set up as any Nobs profile. Out of the box this is
 **"Nobs Autopilot"** (`303A` / `80F4`). To change it, the configuration app sends a single line
 over the board's serial port:
@@ -80,5 +80,5 @@ SET_ID:80F4:Nobs Autopilot
 
 The board saves the new name + ID, replies `OK:80F4:Nobs Autopilot`, and reboots so it takes effect
 (`GET_ID` reads back the current values). For multiple autopilots, give each one the next ID in the
-block — e.g. `SET_ID:80F5:Nobs Autopilot 2`. Full details, including the Windows name-cache
+block, e.g. `SET_ID:80F5:Nobs Autopilot 2`. Full details, including the Windows name-cache
 refresh, are in **[docs/board-identity.md](docs/board-identity.md)**.

@@ -1,6 +1,6 @@
 # Bill of Materials (Shopping List)
 
-This is the full shopping list for building one Nobs Autopilot panel — every part you need, from
+This is the full shopping list for building one Nobs Autopilot panel: every part you need, from
 the electronics to the screws. The tables below group the parts by type. The "Manufacturer /
 Part Number" column lists the exact parts we used, so you can search for them or find equivalents.
 
@@ -9,9 +9,9 @@ A few friendly notes before you start buying:
 - **Exact parts aren't mandatory.** The encoders, switches, and Arduino can be swapped for similar
   parts you like or already have. The part numbers here are just what's known to work.
 - **Item 1.1 below is the Arduino Nano ESP32, the main board for this project.** You can use an
-  older **Arduino Micro** instead — the firmware supports both. See the
+  older **Arduino Micro** instead; the firmware supports both. See the
   [firmware guides](../firmware/arduino_micro/README.md).
-- **The enclosure parts (section 3) are 3D printed** — you print them yourself from the files in
+- **The enclosure parts (section 3) are 3D printed**: you print them yourself from the files in
   the `models/` folder, or have a print service make them.
 - Quantities are for **one** panel.
 
@@ -19,7 +19,7 @@ A few friendly notes before you start buying:
 
 | Item # | Qty | Component Description | Manufacturer / Part Number | Purpose / Application |
 | :--- | :--- | :--- | :--- | :--- |
-| **1.1** | 1 | Arduino Nano ESP32 (with headers) | Arduino / ABX00083 | Main microcontroller (ESP32-S3, USB HID, VID 0x303A / PID 0x80F4) — or substitute an Arduino Micro (Arduino / A000053) |
+| **1.1** | 1 | Arduino Nano ESP32 (with headers) | Arduino / ABX00083 | Main microcontroller (ESP32-S3, USB HID, VID 0x303A / PID 0x80F4); or substitute an Arduino Micro (Arduino / A000053) |
 | **1.2** | 4 | High-Reliability Mechanical Rotary Encoder | Bourns / PEC11H-4020F-S0016 | Multi-turn cockpit adjustments (HDG, ALT, V/S, SPD) |
 | **1.3** | 8 | Subminiature SPDT Momentary Toggle Switch | E-Switch / 700SP7B10M2REH | Panel engagement buttons (SW1–SW8) |
 | **1.4** | 1 | Stripboard Prototype Board | BusBoard Prototype Systems / StripBoard-1 | Main sub-assembly chassis carrier board |

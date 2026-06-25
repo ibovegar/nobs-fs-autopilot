@@ -1,13 +1,13 @@
 # How the Board Names Itself (and How to Rename It)
 
-This page explains, in plain language, how a Nobs board tells your PC who it is — and how you can
+This page explains, in plain language, how a Nobs board tells your PC who it is, and how you can
 change that without re-installing the firmware. You don't need to understand any of this to use the
 autopilot; it's here for the curious and for anyone setting up more than one box.
 
 > **Applies to the Arduino Nano ESP32 build.** On the older **Arduino Micro** build the ID and name
 > are fixed when you compile the firmware (set in its
-> [README](../firmware/arduino_micro/README.md)) and can't be changed afterwards. Everything below
-> — renaming on the fly, running several of the same type — is a Nano ESP32 feature.
+> [README](../firmware/arduino_micro/README.md)) and can't be changed afterwards. Everything below,
+> including renaming on the fly and running several of the same type, is a Nano ESP32 feature.
 
 ## The short version
 
@@ -16,12 +16,12 @@ autopilot; it's here for the curious and for anyone setting up more than one box
 - That name and ID are **not baked into the firmware**. The board remembers them in its own memory,
   so the *same* firmware can be set up as a panel, an autopilot, or an approach box.
 - Out of the box, this board is **"Nobs Autopilot"**. You can change it later with the configuration
-  app — no re-flashing needed.
+  app, no re-flashing needed.
 
 ## Why each box needs its own name and ID
 
 If you own more than one Nobs box, this matters. Microsoft Flight Simulator keeps a separate set of
-button bindings for each controller — but it tells controllers apart by their **ID number**.
+button bindings for each controller, but it tells controllers apart by their **ID number**.
 
 If two boxes shared the same ID, the simulator would treat them as the same device and **mix up
 their button assignments**. Giving each box its own ID (and a clear name) keeps their controls
@@ -36,11 +36,11 @@ of the same type (see below):
 | Autopilot        | Nobs Autopilot      | `80F4`–`80F7` |
 | Approach         | Nobs Approach       | `80F8`–`80FB` |
 
-(They all share the same *vendor* ID, `303A` — that part never changes.)
+(They all share the same *vendor* ID, `303A`; that part never changes.)
 
 ## Running several of the same type
 
-You can use more than one of the same module — say two autopilots — at the same time. The catch is
+You can use more than one of the same module (say two autopilots) at the same time. The catch is
 they must **not** look identical to the PC, or the simulator mixes up their bindings. So each one
 gets its own ID and name from its product's block:
 
@@ -51,7 +51,7 @@ gets its own ID and name from its product's block:
 | 3rd autopilot | Nobs Autopilot 3 | `80F6` |
 
 The first one keeps the plain name and the block's first ID (its out-of-box default). For each
-extra one, give it the next ID and a numbered name with the rename step below — e.g. send
+extra one, give it the next ID and a numbered name with the rename step below, e.g. send
 `SET_ID:80F5:Nobs Autopilot 2` to the second autopilot. In the Nobs app, open **Devices** and press
 **+** on that product to start tracking the extra module. The simulator then sees "Nobs Autopilot"
 and "Nobs Autopilot 2" as two separate controllers with independent bindings.
@@ -69,7 +69,7 @@ That reads as: *"Set your ID to `80F4` and your name to `Nobs Autopilot`."* The 
 
 1. **Saves** the new name and ID into its own memory.
 2. **Confirms** it received them.
-3. **Restarts itself** — and comes back wearing the new name.
+3. **Restarts itself**, then comes back wearing the new name.
 
 That restart is normal and only takes a second. The reason it's needed: a board can only announce
 its identity to the PC at the moment it powers on, so it has to reboot for a new name to take effect.
@@ -92,6 +92,6 @@ Windows will then read the board's name again from scratch and show the updated 
 
 ## Related pages
 
-- [Which wire goes where](./arduino-esp-32-wiring.md) — the button and pin map.
-- [Loading the firmware](../firmware/arduino_eps32_nano/README.md) — step-by-step setup, including
+- [Which wire goes where](./arduino-esp-32-wiring.md): the button and pin map.
+- [Loading the firmware](../firmware/arduino_eps32_nano/README.md): step-by-step setup, including
   the more technical details of how the identity is stored.

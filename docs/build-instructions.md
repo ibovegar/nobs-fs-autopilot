@@ -1,4 +1,4 @@
-# Nobs Autopilot — Build Instructions
+# Nobs Autopilot: Build Instructions
 
 These are the hands-on build steps for the Nobs Autopilot panel: how to wire it,
 how to assemble it, and how to verify it before binding in the sim. For the project
@@ -6,18 +6,18 @@ overview, firmware loading, and the in-sim control mapping, see the
 [main README](../README.md). For the parts list and cost estimate, see
 [bill-of-materials.md](bill-of-materials.md).
 
-The wiring table and steps below show the **Arduino Nano ESP32** build — the main board for this
+The wiring table and steps below show the **Arduino Nano ESP32** build, the main board for this
 project. If you're using the older Arduino Micro instead, use the pin column for it in
 [arduino-micro-wiring.md](arduino-micro-wiring.md).
 
 ## Hardware Connection Scheme
 
 This is the wiring map: each control has one wire to a numbered pin on the Arduino, and one wire
-to **GND** (ground). That's all — you don't need any resistors or extra parts, because the
+to **GND** (ground). That's all: you don't need any resistors or extra parts, because the
 firmware takes care of that for you.
 
 The table below is for the **Arduino Nano ESP32**. Using the older **Arduino Micro**? The pins are
-different — see [arduino-micro-wiring.md](arduino-micro-wiring.md) for its column.
+different; see [arduino-micro-wiring.md](arduino-micro-wiring.md) for its column.
 
 > For a visual reference alongside this table, see the [wiring diagram](wiring-diagram.pdf).
 
@@ -46,7 +46,7 @@ different — see [arduino-micro-wiring.md](arduino-micro-wiring.md) for its col
 | **Ground Loop** | All Components | Common / GND Terminals | **GND** | *None* | System Ground |
 
 > **Pin notes:**
-> * Encoder 1's Phase A wire is on **D13**, which doubles as the board's built-in LED pin — that's why the onboard yellow LED stays lit whenever the firmware is running. It's harmless; move that wire to D2 or D4 (and update the firmware to match) if it bothers you.
+> * Encoder 1's Phase A wire is on **D13**, which doubles as the board's built-in LED pin, which is why the onboard yellow LED stays lit whenever the firmware is running. It's harmless; move that wire to D2 or D4 (and update the firmware to match) if it bothers you.
 
 ## Physical Pinout Reference
 
@@ -78,7 +78,7 @@ Viewed from the rear showing three vertically aligned gold terminals:
 
 Here's how the panel goes together, in order, with a photo of the real build at each stage.
 There's soldering involved, so take your time and work in a well-lit, ventilated spot. Don't
-rush — it's much easier to get each joint right the first time than to fix it later.
+rush: it's much easier to get each joint right the first time than to fix it later.
 
 The build happens in four stages: (1) build the little breakout board the Arduino sits on, (2)
 wire up the switches and knobs, (3) mount everything to the front plate, and (4) close it all up
@@ -89,7 +89,7 @@ in the case.
 ![Bare stripboard](../images/controller_assembly_1.png)
 
 * **Fit Headers:** Position female socket headers onto the stripboard to seat your Arduino board
-  (Nano ESP32 or Micro — the same stripboard layout fits either) and solder them from underneath.
+  (Nano ESP32 or Micro; the same stripboard layout fits either) and solder them from underneath.
 
   ![Female socket headers fitted to the stripboard](../images/controller_assembly_2.png)
 * **Mount Terminal Blocks:** Place the screw terminal blocks flanking the socket headers on the
@@ -123,7 +123,7 @@ in the case.
 
 * **Press in the Inserts:** Using a soldering iron (or a dedicated insert tool) heated to the
   insert manufacturer's recommended temperature, press the heat-set inserts squarely into the
-  enclosure bottom's mounting posts. Do the same for the enclosure top — it isn't pictured
+  enclosure bottom's mounting posts. Do the same for the enclosure top: it isn't pictured
   separately, but takes the same inserts the same way.
 * **Mount the Base Board:** Secure the completed breakout board sub-assembly into the enclosure
   bottom using the M3 pan-head screws.
@@ -138,7 +138,7 @@ in the case.
 1. **Check for shorts first (before plugging in USB):** use a multimeter to make sure none of your
    ground wires are accidentally touching a signal wire. This catches wiring mistakes before they
    reach your PC.
-2. **Load the firmware:** follow the guide for your board — [Arduino Nano ESP32](../firmware/arduino_eps32_nano/README.md)
+2. **Load the firmware:** follow the guide for your board: [Arduino Nano ESP32](../firmware/arduino_eps32_nano/README.md)
    or [Arduino Micro](../firmware/arduino_micro/README.md).
 3. **Confirm the name:** once plugged in, the panel should show up as `Nobs Autopilot (Vendor: 303a
    Product: 80f4)`. If it shows a generic name instead, open Windows **Device Manager**, turn on

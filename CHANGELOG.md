@@ -30,6 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restructured README.md to match the leaner style used by the other Nobs panel projects: a short intro, the VR design philosophy, a "Docs" link list, and a brief device-ID section, with the detailed wiring/firmware/cost content left to its own doc page.
 
 ### Removed
-- The MSFS 2024 button-mapping template from the README (no replacement — it wasn't being kept up to date with the in-sim binding workflow).
+- The MSFS 2024 button-mapping template from the README (no replacement; it wasn't being kept up to date with the in-sim binding workflow).
 
 [Unreleased]: https://github.com/ibovegar/nobs-fs-autopilot/commits/main
