@@ -25,6 +25,8 @@ A few friendly notes before you start buying:
 | **1.4** | 1 | Stripboard Prototype Board | BusBoard Prototype Systems / StripBoard-1 | Main sub-assembly chassis carrier board |
 | **1.5** | 2 | Female 2.54 mm Pin Header, 26 positions | — | Sockets soldered to the stripboard to seat the Arduino board (Nano ESP32 or Micro) |
 | **1.6** | 8 | Fixed Terminal Block (2.54 mm Pitch) | GCT / TBC05-06-1-G-G | Clean screw-down wiring for switches and encoders |
+| **1.7** | 1 | 3 mm Green Diffused LED | Lumex / SSL-LX30FT4GD | Power/status indicator |
+| **1.8** | 1 | 120 Ω Metal Film Resistor, 1/4 W, ±1% | KOA Speer / MFS1/4DCT52R1200F | Current-limiting resistor for the indicator LED |
 
 ## Knobs, Caps, Connectors & Wiring
 
@@ -67,6 +69,7 @@ Rough cost estimate for a single panel, in USD. These are ballpark figures only,
 | Rotary encoders | 4 × Bourns PEC11H | $10 – $15 |
 | Switches | 8 × E-Switch 700-series momentary | $25 – $35 |
 | Board & wiring | Stripboard, pin headers, 8 × terminal blocks | $12 – $18 |
+| Indicator LED | LED + current-limiting resistor | $1 – $2 |
 | Knobs & caps | 4 × encoder knobs, 8 × button caps | $15 – $25 |
 | Connectors & consumables | USB cable, hook-up wire kit, heat-shrink | $20 – $25 |
 | Fasteners | Heat-set inserts, M3/M4 screws | $10 – $18 |
