@@ -15,7 +15,7 @@ you use that control. You don't wire anything for it.
 > 💡 Each control has one wire to its signal pin (from this table) and one wire to **GND**. No
 > resistors or extra parts needed; the firmware handles that.
 >
-> For a visual reference alongside this table, see the [wiring diagram](wiring-diagram.pdf).
+> For a visual reference alongside this table, see the [wiring diagram](wiring-diagram-micro.pdf).
 
 | Component Group | Component Label | Hardware Connection | Arduino Micro Pin | Virtual HID Button | Action Type |
 | :--- | :--- | :--- | :--- | :--- | :--- |

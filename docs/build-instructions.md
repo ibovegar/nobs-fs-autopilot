@@ -19,7 +19,7 @@ firmware takes care of that for you.
 The table below is for the **Arduino Nano ESP32**. Using the older **Arduino Micro**? The pins are
 different; see [arduino-micro-wiring.md](arduino-micro-wiring.md) for its column.
 
-> For a visual reference alongside this table, see the [wiring diagram](wiring-diagram.pdf).
+> For a visual reference alongside this table, see the [wiring diagram](wiring-diagram-esp32-nano.pdf) (or the [Arduino Micro wiring diagram](wiring-diagram-micro.pdf) if you're using that board).
 
 | Component Group | Component Label | Hardware Connection | Arduino Nano ESP32 Pin | Virtual HID Button | Action Type |
 | :--- | :--- | :--- | :--- | :--- | :--- |

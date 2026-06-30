@@ -15,7 +15,7 @@ you use that control. You don't wire anything for it.
 > 💡 Each control has one wire to its signal pin (from this table) and one wire to **GND**. No
 > resistors or extra parts needed; the firmware handles that.
 >
-> For a visual reference alongside this table, see the [wiring diagram](wiring-diagram.pdf).
+> For a visual reference alongside this table, see the [wiring diagram](wiring-diagram-esp32-nano.pdf).
 
 | Component Group | Component Label | Hardware Connection | Arduino Nano ESP32 Pin | Virtual HID Button | Action Type |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -40,3 +40,9 @@ you use that control. You don't wire anything for it.
 | | Switch 7 (SW7) | Terminal 2 (N.O.) | **D6** | Button 19 | Push |
 | | Switch 8 (SW8) | Terminal 2 (N.O.) | **D5** | Button 20 | Push |
 | **Ground Loop** | All Components | Common / GND Terminals | **GND** | *None* | System Ground |
+| **Status LED** | Status LED | Anode, via 120 Ω resistor | **D4** | *None* | Boot/Connect Status |
+| | Status LED | Cathode | **GND** | *None* | Boot/Connect Status |
+
+> 💡 **Status LED:** wired with a 120 Ω current-limiting resistor from **D4** to **GND**. It blinks
+> while the board is booting/waiting for USB enumeration, and lights steady once the host PC has
+> enumerated it.

@@ -20,12 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Placeholder for an ESP32 Nano firmware variant ([firmware/arduino_eps32_nano/](firmware/arduino_eps32_nano/)).
 - Runtime-configurable USB identity for the Arduino Nano ESP32 build: PID and product name are stored in flash (NVS) and can be reassigned over USB serial with `SET_ID`/`GET_ID`, so each physical panel can be told apart by MSFS. Documented in [docs/board-identity.md](docs/board-identity.md).
 - Arduino Micro pinout reference ([docs/arduino-micro-wiring.md](docs/arduino-micro-wiring.md)), split out now that the wiring docs are written around the Nano ESP32.
+- Power/status LED on the Nano ESP32 build, wired to **D4** via a 120 Ω resistor: blinks while booting/waiting for USB enumeration, lights steady once the host PC has enumerated it.
 
 ### Changed
 - The **Arduino Nano ESP32** is now the project's main board; the build instructions, BOM, and wiring docs are written around it, with the Arduino Micro documented as a supported alternative.
 - Both firmware variants now report VID `0x303A` (Espressif's vendor ID) instead of `0x2341`, alongside PID `0x80F4` / "Nobs Autopilot".
 - Corrected the BOM's USB cable spec to USB-C for the Nano ESP32 (was Micro-B, which only applies to the Arduino Micro alternative).
 - Renamed `docs/Wiring diagram.pdf` to `docs/wiring-diagram.pdf` and linked it from the wiring and build-instructions docs.
+- Split `docs/wiring-diagram.pdf` into separate per-board diagrams, `docs/wiring-diagram-esp32-nano.pdf` and `docs/wiring-diagram-micro.pdf`, and updated the wiring/build-instructions links to match.
 - Moved the build instructions out of the README into their own guide ([docs/build-instructions.md](docs/build-instructions.md)), and added photos of the breakout board and enclosure integration steps ([images/](images/)).
 - Restructured README.md to match the leaner style used by the other Nobs panel projects: a short intro, the VR design philosophy, a "Docs" link list, and a brief device-ID section, with the detailed wiring/firmware/cost content left to its own doc page.
 

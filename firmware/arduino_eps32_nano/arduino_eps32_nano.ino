@@ -202,7 +202,7 @@ extern "C" const uint16_t* tud_descriptor_string_cb(uint8_t index, uint16_t lang
 // built-in amber LED (GPIO48 / LED_BUILTIN). INPUT_PULLUP holds it HIGH, so that LED
 // stays lit whenever the firmware runs — expected, not a fault. The encoder still
 // reads, but if you want the LED off (or cleaner readings), move Phase A to a free
-// header pin (D2 or D4 are unused) and update the wiring doc to match.
+// header pin (D2 is unused; D4 drives the status LED) and update the wiring doc to match.
 const uint8_t encA[4]    = { D13, A2, A5, D0 };
 const uint8_t encB[4]    = { A0,  A3, A6, D1 };
 const uint8_t encPush[4] = { A1,  A4, A7, D3 };
@@ -214,6 +214,12 @@ const uint8_t swPin[8]   = { D12, D11, D10, D9, D8, D7, D6, D5 };
 // reads LOW = pressed. All of these GPIOs support the ESP32-S3 internal pull-up;
 // if a future revision moves a signal onto a pull-up-less pad, add an external
 // 10 kΩ pull-up to 3V3 there.
+
+// ── Status LED (D4) ────────────────────────────────────────────────────────────
+// Blinks while booting/waiting for USB enumeration, steady once enumerated. D4 also
+// doubles as DSR (a USB CDC modem-control signal), but this sketch never drives DSR,
+// so the pin is free for plain GPIO use.
+const uint8_t STATUS_LED_PIN = D4;
 
 // ── Button index map (must match the wiring doc / src/panel/panel.ts) ─────────
 const uint8_t encBase[4] = { 0, 3, 6, 9 }; // CW = base, CCW = base + 1, push = base + 2
@@ -390,6 +396,43 @@ void handleSerialConfig() {
   }
 }
 
+// ── USB enumeration tracking (for the status LED) ─────────────────────────────
+// This device is read purely over HID for normal use — the CDC port is only opened
+// for one-off config (the app's Settings page), so it can't tell us whether the
+// flight-sim app is actively using the device. The best available signal is USB
+// enumeration itself: ARDUINO_USB_STARTED_EVENT fires once the host finishes
+// recognizing the composite device (tud_mount_cb), ARDUINO_USB_STOPPED_EVENT if it's
+// unplugged or the bus drops (tud_umount_cb). So "connected" here means "enumerated
+// by a host", not "the app has it open" — there's no such signal for a plain HID
+// gamepad with no application-level handshake.
+volatile bool hostConnected = false;
+
+void onUsbEvent(void* arg, esp_event_base_t base, int32_t id, void* eventData) {
+  (void)arg;
+  (void)base;
+  (void)eventData;
+  if (id == ARDUINO_USB_STARTED_EVENT) hostConnected = true;
+  else if (id == ARDUINO_USB_STOPPED_EVENT) hostConnected = false;
+}
+
+// Blink while booting/waiting for USB enumeration; steady once enumerated
+// (hostConnected, set from the USB started/stopped events above). Non-blocking so it
+// never stalls loop().
+void updateStatusLed() {
+  if (hostConnected) {
+    digitalWrite(STATUS_LED_PIN, HIGH);
+    return;
+  }
+  static uint32_t lastToggle = 0;
+  static bool     ledOn      = false;
+  uint32_t now = millis();
+  if (now - lastToggle >= 150) {
+    lastToggle = now;
+    ledOn = !ledOn;
+    digitalWrite(STATUS_LED_PIN, ledOn);
+  }
+}
+
 void setup() {
   for (uint8_t i = 0; i < 4; i++) {
     pinMode(encA[i], INPUT_PULLUP);
@@ -406,6 +449,7 @@ void setup() {
   for (uint8_t i = 0; i < 8; i++) {
     pinMode(swPin[i], INPUT_PULLUP);
   }
+  pinMode(STATUS_LED_PIN, OUTPUT);
   // Load each encoder's saved acceleration sensitivity (0xFF on a fresh chip → 255 = full).
   EEPROM.begin(EEPROM_SIZE);
   for (uint8_t i = 0; i < 4; i++) accelSens[i] = EEPROM.read(EEPROM_ADDR_ACCEL + i);
@@ -424,6 +468,7 @@ void setup() {
   USB.manufacturerName("Arduino");
 
   Joystick.begin();        // create the HID report semaphores/mutex
+  USB.onEvent(onUsbEvent); // detect USB enumeration, for the status LED
   USBSerial.begin(115200); // USB CDC config port; do NOT wait on it (would stall)
   USB.begin();             // build + start the composite USB device (HID + CDC)
 }
@@ -432,6 +477,7 @@ void loop() {
   unsigned long now = millis();
 
   handleSerialConfig(); // apply any pending acceleration-sensitivity command
+  updateStatusLed();    // blink while waiting for USB enumeration, steady once enumerated
 
   // ── Encoders ────────────────────────────────────────────────────────────────
   for (uint8_t i = 0; i < 4; i++) {
