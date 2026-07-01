@@ -1,4 +1,4 @@
-# Nobs Autopilot: DIY VR-Friendly Autopilot Panel
+# Nobs Autopilot
 
 A build-it-yourself control panel for flight simulators, with **4 rotary encoders** and **8 toggle
 switches** wired to an **Arduino Nano ESP32** (an older **Arduino Micro** is also supported). It
@@ -7,6 +7,8 @@ Autopilot"**, recognised directly by MSFS or DCS and the Nobs app, with no drive
 
 Each encoder's turn-left, turn-right, and push are reported as 3 buttons (12 total); the 8 toggle
 switches add 8 more, for **20 buttons** total.
+
+![Nobs Autopilot](images/nobs_autopilot.png)
 
 ## Virtual Reality (VR) Design Philosophy
 
@@ -26,7 +28,8 @@ memory and physical feedback**:
 - **[Build instructions](docs/build-instructions.md)**: wiring map, physical pinout reference,
   step-by-step assembly with photos, and first-time verification.
 - **[Which wire goes where](docs/arduino-esp-32-wiring.md)**: the button + pin map for the Nano
-  ESP32 build.
+  ESP32 build. For a visual reference alongside it, see the
+  [wiring diagram](docs/wiring-diagram-esp32-nano.pdf).
 - **[Loading the firmware](firmware/arduino_eps32_nano/README.md)**: first-time flashing and
   re-flashing, step by step.
 - **[Setting the device ID & name](docs/board-identity.md)**: how the board names itself, how to
@@ -42,7 +45,8 @@ reconfigurable (see [docs/board-identity.md](docs/board-identity.md)). If you go
 two things differ:
 
 1. **Wiring pins:** use [docs/arduino-micro-wiring.md](docs/arduino-micro-wiring.md) instead of
-   the Nano ESP32 pin table in the [build instructions](docs/build-instructions.md).
+   the Nano ESP32 pin table in the [build instructions](docs/build-instructions.md), with its own
+   [wiring diagram](docs/wiring-diagram-micro.pdf).
 2. **Loading the firmware:** follow
    [firmware/arduino_micro/README.md](firmware/arduino_micro/README.md) instead (it needs a
    one-time `boards.txt` edit to set the board's USB name/ID before the first upload).
