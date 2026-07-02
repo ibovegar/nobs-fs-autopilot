@@ -10,6 +10,15 @@ switches add 8 more, for **20 buttons** total.
 
 ![Nobs Autopilot](images/nobs_autopilot.png)
 
+## Mounting
+
+The Nobs panels are designed to mount to a 40x80 T-slot aluminium extrusion rig (e.g. a Track
+Racer TR160), around the central profile assembly that holds the flight yoke or steering wheel:
+**Nobs Panel** mounts to the left of the assembly, **Nobs Approach** to the right, and **Nobs
+Autopilot** on top.
+
+![Rig assembly](images/rig-assembly.PNG)
+
 ## Virtual Reality (VR) Design Philosophy
 
 Unlike traditional cockpit panels, **this project is engineered specifically for VR flight
