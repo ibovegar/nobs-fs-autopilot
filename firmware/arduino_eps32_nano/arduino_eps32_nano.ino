@@ -416,16 +416,37 @@ void onUsbEvent(void* arg, esp_event_base_t base, int32_t id, void* eventData) {
 }
 
 // Blink while booting/waiting for USB enumeration; steady once enumerated
-// (hostConnected, set from the USB started/stopped events above). Non-blocking so it
-// never stalls loop().
+// (hostConnected, set from the USB started/stopped events above). If a host never
+// shows up (unit powered from a data-less USB port/charger, or no PC attached), give
+// up blinking after STATUS_LED_TIMEOUT_MS and go dark rather than blink forever — the
+// wait window restarts if the host later disconnects. Non-blocking so it never stalls
+// loop().
+const uint32_t STATUS_LED_TIMEOUT_MS = 10000;
+
 void updateStatusLed() {
+  static bool     wasConnected = false;
+  static uint32_t waitStart    = 0;
+  static uint32_t lastToggle   = 0;
+  static bool     ledOn        = false;
+  uint32_t now = millis();
+
   if (hostConnected) {
     digitalWrite(STATUS_LED_PIN, HIGH);
+    wasConnected = true;
     return;
   }
-  static uint32_t lastToggle = 0;
-  static bool     ledOn      = false;
-  uint32_t now = millis();
+
+  if (wasConnected) {
+    // Just dropped from connected to disconnected — restart the blink window.
+    wasConnected = false;
+    waitStart = now;
+  }
+
+  if (now - waitStart >= STATUS_LED_TIMEOUT_MS) {
+    digitalWrite(STATUS_LED_PIN, LOW); // gave up waiting; stay dark until enumerated
+    return;
+  }
+
   if (now - lastToggle >= 150) {
     lastToggle = now;
     ledOn = !ledOn;
@@ -477,7 +498,7 @@ void loop() {
   unsigned long now = millis();
 
   handleSerialConfig(); // apply any pending acceleration-sensitivity command
-  updateStatusLed();    // blink while waiting for USB enumeration, steady once enumerated
+  updateStatusLed();    // blink while waiting for USB enumeration (times out to dark), steady once enumerated
 
   // ── Encoders ────────────────────────────────────────────────────────────────
   for (uint8_t i = 0; i < 4; i++) {

@@ -1,2 +1,5 @@
 # Local Claude Code tooling (settings, memory) — not part of the project
 .claude/
+
+# 3D printer slicer project files (large, regenerable from source models)
+*.3mf

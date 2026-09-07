@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Placeholder for an ESP32 Nano firmware variant ([firmware/arduino_eps32_nano/](firmware/arduino_eps32_nano/)).
 - Runtime-configurable USB identity for the Arduino Nano ESP32 build: PID and product name are stored in flash (NVS) and can be reassigned over USB serial with `SET_ID`/`GET_ID`, so each physical panel can be told apart by MSFS. Documented in [docs/board-identity.md](docs/board-identity.md).
 - Arduino Micro pinout reference ([docs/arduino-micro-wiring.md](docs/arduino-micro-wiring.md)), split out now that the wiring docs are written around the Nano ESP32.
-- Power/status LED on the Nano ESP32 build, wired to **D4** via a 120 Ω resistor: blinks while booting/waiting for USB enumeration, lights steady once the host PC has enumerated it.
+- Power/status LED on the Nano ESP32 build, wired to **D4** via a 120 Ω resistor: blinks while booting/waiting for USB enumeration, lights steady once the host PC has enumerated it, and goes dark after 10s if no host ever shows up (e.g. powered from a charger with no data lines) instead of blinking indefinitely.
 
 ### Changed
 - The **Arduino Nano ESP32** is now the project's main board; the build instructions, BOM, and wiring docs are written around it, with the Arduino Micro documented as a supported alternative.
