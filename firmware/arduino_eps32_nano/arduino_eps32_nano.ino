@@ -47,6 +47,7 @@
 #include "USBCDC.h"
 #include <EEPROM.h>
 #include <Preferences.h>
+#include "soc/usb_serial_jtag_reg.h"
 
 #if ARDUINO_USB_MODE
 #error "Set Tools > USB Mode to 'Normal mode (TinyUSB)'. Custom HID needs the TinyUSB stack."
@@ -454,6 +455,27 @@ void updateStatusLed() {
   }
 }
 
+// ── Clean USB hand-over on a cold plug-in ─────────────────────────────────────
+// At power-up the ESP32-S3 first appears on the bus as its built-in "USB JTAG/serial
+// debug unit" (303A:1001). USB.begin() then hands the USB pins to TinyUSB, but if the
+// host never sees the old device drop off the bus it keeps the stale 303A:1001 entry
+// and never enumerates ours — the board then only works after a re-flash (which
+// restarts straight into TinyUSB). Dropping the D+ pull-up for a moment makes the host
+// register a real disconnect first, so it enumerates the Nobs device afresh.
+const uint32_t USB_DETACH_MS = 250;
+
+void detachBuiltinUsb() {
+  SET_PERI_REG_MASK(USB_SERIAL_JTAG_CONF0_REG, USB_SERIAL_JTAG_PAD_PULL_OVERRIDE);
+  CLEAR_PERI_REG_MASK(USB_SERIAL_JTAG_CONF0_REG, USB_SERIAL_JTAG_DP_PULLUP);
+  delay(USB_DETACH_MS);
+}
+
+// Hand pull-up control back (register defaults) once TinyUSB owns the pins.
+void releaseBuiltinUsbPulls() {
+  SET_PERI_REG_MASK(USB_SERIAL_JTAG_CONF0_REG, USB_SERIAL_JTAG_DP_PULLUP);
+  CLEAR_PERI_REG_MASK(USB_SERIAL_JTAG_CONF0_REG, USB_SERIAL_JTAG_PAD_PULL_OVERRIDE);
+}
+
 void setup() {
   for (uint8_t i = 0; i < 4; i++) {
     pinMode(encA[i], INPUT_PULLUP);
@@ -491,7 +513,9 @@ void setup() {
   Joystick.begin();        // create the HID report semaphores/mutex
   USB.onEvent(onUsbEvent); // detect USB enumeration, for the status LED
   USBSerial.begin(115200); // USB CDC config port; do NOT wait on it (would stall)
+  detachBuiltinUsb();      // make the host drop the boot-time 303A:1001 device first
   USB.begin();             // build + start the composite USB device (HID + CDC)
+  releaseBuiltinUsbPulls();
 }
 
 void loop() {
